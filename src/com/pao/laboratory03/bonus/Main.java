@@ -1,5 +1,12 @@
 package com.pao.laboratory03.bonus;
 
+import com.pao.laboratory03.bonus.enums.Priority;
+import com.pao.laboratory03.bonus.enums.Status;
+import com.pao.laboratory03.bonus.exceptions.TaskNotFoundException;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * Exercițiul 5 (Bonus) — Sistem de gestiune task-uri cu audit log
  *
@@ -155,10 +162,84 @@ package com.pao.laboratory03.bonus;
  */
 public class Main {
     public static void main(String[] args) {
-        // TODO: implementează toți cei 10 pași de mai sus
-        // Creează TOATE clasele necesare în acest pachet (bonus/)
-        // Nu ai subpachete impuse — organizează cum consideri
+        TaskService taskService = TaskService.getInstance();
+        System.out.println("Adăugare task-uri:");
+        taskService.addTask("Task exemplu 1", Priority.HIGH);
+        taskService.addTask("Task exemplu 2", Priority.LOW);
+        taskService.addTask("Task exemplu 3", Priority.MEDIUM);
+        taskService.addTask("Task exemplu 4", Priority.HIGH);
+        taskService.addTask("Task exemplu 5", Priority.CRITICAL);
+
+        System.out.println("\nAsignare:");
+        try{
+            taskService.assignTask("T001", "Marcel");
+        } catch (TaskNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        try{
+            taskService.assignTask("T003", "Daniel");
+        } catch (TaskNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        try{
+            taskService.assignTask("T002", "Ion");
+        } catch (TaskNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\nSchimbari status:");
+        try{
+            taskService.changeStatus("T001", Status.IN_PROGRESS);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+        try{
+            taskService.changeStatus("T002", Status.DONE);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+        try{
+            taskService.changeStatus("T003", Status.CANCELLED);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+        try{
+            taskService.changeStatus("T001", Status.DONE);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\nTask-uri HIGH:");
+        List<Task> taskuriHigh = taskService.getTasksByPriority(Priority.HIGH);
+        for (Task task : taskuriHigh) {
+            System.out.println(task.getId() + ": " + task.getTitle());
+        }
+
+        System.out.println("\nSumar status:");
+        Map<Status, Long> statusSummary = taskService.getStatusSummary();
+        for (Map.Entry<Status, Long> entry : statusSummary.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+
+        System.out.println("\nTask-uri neasignate:");
+        List<Task> taskuriNeasignate = taskService.getUnassignedTasks();
+        for (Task task : taskuriNeasignate) {
+            System.out.println(task.getId() + ": " + task.getTitle());
+        }
+
+        System.out.println("\nScor Urgenta, baseDays = 3, este: " + taskService.getTotalUrgencyScore(3));
+
+        System.out.println("\nAudit Log:");
+        taskService.printAuditLog();
+
+        System.out.println("\n Nu știu cum ar fi posibil să adaug două task-uri cu același id, pentru că în modul în care l-am implementat (counter), teoretic s-ar putea activa doar printr-un overflow");
+
+        System.out.println("\n Cautare task care nu exista");
+        try{
+            taskService.assignTask("P27", "Ionut");
+        } catch(TaskNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 }
-
-
