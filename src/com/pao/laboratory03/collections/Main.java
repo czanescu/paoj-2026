@@ -1,5 +1,7 @@
 package com.pao.laboratory03.collections;
 
+import java.util.*;
+
 /**
  * Exercițiul 1 — Colecții: HashMap și TreeMap
  *
@@ -50,7 +52,40 @@ package com.pao.laboratory03.collections;
  */
 public class Main {
     public static void main(String[] args) {
-        // TODO: implementează cele 3 părți de mai sus
+        System.out.println("Partea A - Hashmap");
+        String[] words = {"java", "python", "java", "c++", "python", "java", "rust", "c++", "go"};
+        Map<String, Integer> aparitii = new HashMap<>();
+        int valoare;
+        for (String w : words) {
+            valoare = aparitii.getOrDefault(w,0);
+            aparitii.put(w, valoare + 1);
+        }
+        System.out.println("Map: " + aparitii);
+        if (aparitii.containsKey("rust")) System.out.println("Este prezenta cheia rust");
+        else System.out.println("Nu este prezenta cheia rust");
+
+        System.out.println("Chei: " + aparitii.keySet());
+        System.out.println("Valori: " + aparitii.values());
+
+        System.out.println("Iterare cu entrySet:");
+        for (Map.Entry<String, Integer> entry : aparitii.entrySet()) {
+            System.out.println("  " + entry.getKey() + " => " + entry.getValue());
+        }
+
+        System.out.println("\nPartea B - TreeMap");
+        TreeMap<String,Integer> aparitiiTree = new TreeMap<>(aparitii);
+        System.out.println("Sortat " + aparitiiTree);
+        System.out.println("Prima cheie "+ aparitiiTree.firstKey());
+        System.out.println("Ultima cheie "+ aparitiiTree.lastKey());
+
+        System.out.println("\nPartea C - Map cu obiecte");
+        HashMap<String, List<String>> materii = new HashMap<>();
+        materii.put("PAOJ", new ArrayList<>(Arrays.asList("Ana", "Mihai", "Ion")));
+        materii.put("BD", new ArrayList<>(Arrays.asList("Ana", "Elena")));
+        System.out.println("Studentii de la PAOJ: " + materii.get("PAOJ"));
+        materii.get("BD").add("Mircea");
+        System.out.println("Studentii de la BD (actualizat): " + materii.get("BD"));
+
     }
 }
 
