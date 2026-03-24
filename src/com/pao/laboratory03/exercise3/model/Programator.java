@@ -1,4 +1,5 @@
-package com.pao.laboratory02.exercise3.model;
+package com.pao.laboratory03.exercise3.model;
+import com.pao.laboratory03.exercise3.model.Angajat;
 
 /**
  * TODO: Implementează Programator extends Angajat.

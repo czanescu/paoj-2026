@@ -1,6 +1,8 @@
-package com.pao.laboratory01.exercise;
+package com.pao.laboratory02.exercise;
 
 import java.util.Scanner;
+import com.pao.laboratory02.exercise.CarService;
+import com.pao.laboratory02.exercise.Car;
 
 /**
  * Exercițiu — Meniu interactiv CRUD pentru Car
