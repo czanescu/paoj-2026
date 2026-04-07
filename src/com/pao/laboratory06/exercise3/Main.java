@@ -6,7 +6,7 @@ import com.pao.laboratory06.exercise3.Indivizi.PersoanaJuridica;
 import java.util.Arrays;
 
 public class Main {
-    public static void main() {
+    public static void main(String[] args) {
         Inginer[] ingineri = {
                 new Inginer("Popescu", "Andrei", "0711111111", 5000, 8000),
                 new Inginer("Ionescu", "Maria", "0722222222", 7000, 6000),
