@@ -1,4 +1,4 @@
-# Laboratory 06 — Interfețe
+ # Laboratory 06 — Interfețe
 
 > **Pachet:** `com.pao.laboratory06` · **Curs:** 05 ·
 > **Data limită:** miercuri 1 aprilie 2026, ora 23:59

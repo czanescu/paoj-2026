@@ -1,7 +1,7 @@
 package com.pao.laboratory07.exercise2;
 
 import java.util.*;
-import com.pao.laboratory07.exercise1.OrderState;
+/*import com.pao.laboratory07.exercise1.OrderState;
 
 public class Main {
     public static void main(String[] args) {
@@ -49,3 +49,4 @@ public class Main {
         System.out.printf("Total platit: %.2f lei\n", sumaStandard + sumaDiscounted);
     }
 }
+*/
