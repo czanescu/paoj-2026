@@ -23,5 +23,7 @@ public final class ComandaGratuita extends Comanda {
         return client;
     }
     @Override
-    public int getDiscountProcent() {return 100;}
+    public int getDiscountProcent() {return 0;}
+    @Override
+    public String getTipComanda() {return "GIFT";}
 }

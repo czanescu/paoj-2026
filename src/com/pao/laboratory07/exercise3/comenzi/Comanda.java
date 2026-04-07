@@ -12,4 +12,5 @@ public abstract sealed class Comanda permits ComandaStandard, ComandaRedusa, Com
     public abstract String descriere();
     public abstract String getClient();
     public abstract int getDiscountProcent();
+    public abstract String getTipComanda();
 }

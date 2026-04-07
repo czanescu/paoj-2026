@@ -29,4 +29,6 @@ public final class ComandaRedusa extends Comanda {
     public int getDiscountProcent() {
         return discountProcent;
     }
+    @Override
+    public String getTipComanda() {return "DISCOUNTED";}
 }

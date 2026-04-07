@@ -25,4 +25,6 @@ public final class ComandaStandard extends Comanda {
     }
     @Override
     public int getDiscountProcent() {return 0;}
+    @Override
+    public String getTipComanda() {return "STANDARD";}
 }
