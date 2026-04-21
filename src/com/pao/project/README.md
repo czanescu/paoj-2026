@@ -34,7 +34,7 @@ git push origin proiect-etapa2
 
 - ✅ Proiectul **compilează** fără erori
 - ✅ Toate cerințele etapei sunt implementate și demonstrabile din `Main`
-- ✅ Codul este organizat în pachete (`com.pao.proiect.<tema_ta>`)
+- ✅ Codul este organizat în pachete (`com.pao.proiectMagazin.<tema_ta>`)
 - ✅ Branch-ul este push-uit pe GitHub înainte de deadline
 
 > ⚠️ Proiectele care nu compilează sau nu sunt trimise la timp **nu se punctează**.
@@ -127,7 +127,7 @@ Exemple (pentru tema *Bibliotecă*):
 
 - [ ] Codul organizat în **sub-pachete** logice:
   ```
-  com.pao.proiect.<tema>/
+  com.pao.proiectMagazin.<tema>/
   ├── model/        ← clasele de domeniu
   ├── service/      ← serviciile singleton
   ├── exception/    ← excepțiile custom
