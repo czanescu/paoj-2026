@@ -1,4 +1,4 @@
-# Exercițiul 2 (BONUS) — Filtrare și scriere în fișier
+R# Exercițiul 2 (BONUS) — Filtrare și scriere în fișier
 
 > **Pachet:** `com.pao.laboratory08.exercise2`
 > **Timp estimat:** ~25 min · **Fără teste automate**
