@@ -1,23 +1,13 @@
-package com.pao.proiectMagazin.Modele;
+package com.pao.proiectMagazin.modele;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Angajat implements Utilizator{
-    String nume;
-    String prenume;
-    String username;// e teoretic si el uid, dar l-am adaugat dupa ce deja implementasem uid-ul
-    int salariu;
-    String cnp;
-    int uid;
-    String adresa;
-    String telefon;
-    String email;
-    String parola;
-    String dataNasterii;
-    String dataAngajare;
-    String dataConcediere;
-    List<String> intervaleAngajariPrecedente;
+public class Angajat extends Persoana{
+    protected int salariu;
+    protected String dataAngajare;
+    protected String dataConcediere;
+    protected List<String> intervaleAngajariPrecedente;
 
     public Angajat(
             String username,
@@ -32,20 +22,11 @@ public class Angajat implements Utilizator{
             String dataNasterii,
             String dataAngajare,
             int uid){
-        this.username = username;
-        this.nume = nume;
-        this.prenume = prenume;
+        super(nume, prenume, username, cnp, adresa, telefon, email, parola, uid);
         this.salariu = salariu;
-        this.cnp = cnp;
-        this.adresa = adresa;
-        this.telefon = telefon;
-        this.email = email;
-        this.parola = parola;
-        this.dataNasterii = dataNasterii;
         this.dataAngajare = dataAngajare;
         this.dataConcediere = null;
         this.intervaleAngajariPrecedente = new ArrayList<>();
-        this.uid = uid;
     }
 
     public void reangajare(String dataAngajare){
@@ -92,15 +73,17 @@ public class Angajat implements Utilizator{
         else
             System.out.println("Nu exista intervale de angajare precedente");
     }
+    @Override
     public String toStringCompact(){
         if (!eAngajat())
             return String.format("%d, %s %s, %s - demisionat", uid, nume, prenume, getRol());
         return String.format("%d, %s %s, %s", uid, nume, prenume, getRol());
     }
+    @Override
     public String toStringDetaliat(){
         if (dataConcediere != null)
             return String.format("%d, %s, %s %s, salariu: %s, cnp: %s, adresa: %s, telefon: %s, email: %s, data nasterii: %s, data angajare: %s, data concediere: %s", uid, username, nume, prenume, salariu, cnp, adresa, telefon, email, dataNasterii, dataAngajare, dataConcediere);
-        return String.format("%d, %s, %s %s, salariu: %s, cnp: %s, adresa: %s, telefon: %s, email: %s, data nasterii: %s, data angajare: %s", uid, username, nume, prenume, salariu, cnp, adresa, telefon, parola, dataNasterii, dataAngajare);
+        return String.format("%d, %s, %s %s, salariu: %s, cnp: %s, adresa: %s, telefon: %s, email: %s, data nasterii: %s, data angajare: %s", uid, username, nume, prenume, salariu, cnp, adresa, telefon, email, dataNasterii, dataAngajare);
     }
 
     public String getRol(){return "Angajat";}

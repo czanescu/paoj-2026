@@ -1,6 +1,6 @@
-package com.pao.proiectMagazin.Modele;
+package com.pao.proiectMagazin.modele;
 
-public class Manager extends Angajat implements Utilizator{
+public class Manager extends Angajat{
     public Manager(String username,
                    String nume,
                    String prenume,

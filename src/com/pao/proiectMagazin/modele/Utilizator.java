@@ -1,6 +1,4 @@
-package com.pao.proiectMagazin.Modele;
-
-import java.util.List;
+package com.pao.proiectMagazin.modele;
 
 public interface Utilizator {
 

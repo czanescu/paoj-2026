@@ -1,11 +1,11 @@
-package com.pao.proiectMagazin.Modele;
+package com.pao.proiectMagazin.modele;
 
 public class Furnizor {
-    String nume;
-    String adresa;
-    String telefon;
-    String email;
-    String cui;
+    private String nume;
+    private String adresa;
+    private String telefon;
+    private String email;
+    private String cui;
 
     public Furnizor(String nume, String adresa, String telefon, String email, String cui){
         this.nume = nume;
@@ -26,4 +26,18 @@ public class Furnizor {
     public void setAdresa(String adresa){this.adresa = adresa;}
     public void setTelefon(String telefon){this.telefon = telefon;}
     public void setEmail(String email){this.email = email;}
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj instanceof Furnizor) {
+            Furnizor furnizor = (Furnizor) obj;
+            return furnizor.cui.equals(this.cui);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode(){
+        return cui.hashCode();
+    }
 }

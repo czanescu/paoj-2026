@@ -1,4 +1,4 @@
-package com.pao.proiectMagazin.Servicii;
+package com.pao.proiectMagazin.servicii;
 
 public final class ContorCodInventar {
     private static volatile ContorCodInventar instance;

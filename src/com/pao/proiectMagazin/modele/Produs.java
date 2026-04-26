@@ -1,18 +1,18 @@
-package com.pao.proiectMagazin.Modele;
+package com.pao.proiectMagazin.modele;
 
 import java.util.List;
 
-public class Produs {
-    String nume;
-    int pretCumparare;
-    int pretVanzare;
-    String categorie;
-    String cuiFurnizor;
-    int stocMinim;
-    int codInventar;
-    int stoc;
-    int procentReducere;
-    List<String> specificatii;
+public class Produs implements Comparable<Produs>{
+    private String nume;
+    private int pretCumparare;
+    private int pretVanzare;
+    private String categorie;
+    private String cuiFurnizor;
+    private int stocMinim;
+    private final int codInventar;
+    private int stoc;
+    private int procentReducere;
+    private List<String> specificatii;
 
     public Produs(int codInventar, String nume, int pretCumparare, int pretVanzare, String categorie, String cuiFurnizor, int stocMinim,int stoc, int procentReducere, List<String> specificatii){
         this.codInventar = codInventar;
@@ -62,8 +62,27 @@ public class Produs {
     public void addStoc(int nr){stoc += nr;}
     public void vanzare(int nr){stoc -=nr;}
 
+    @Override
     public String toString()
     {
         return String.format("Cod inventar: %d, Nume: %s, Stoc: %s, Pret cumparare: %d, Pret vanzare: %d, reducere: %d%%, Categorie: %s, CUI furnizor: %s, Stoc minim: %d, Specificatii: %s", codInventar, nume, stoc, pretCumparare, pretVanzare, procentReducere, categorie, cuiFurnizor, stocMinim, specificatii);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof Produs)) return false;
+        Produs produs = (Produs) obj;
+        return produs.codInventar == this.codInventar;
+    }
+
+    @Override
+    public int hashCode() {
+        return codInventar;
+    }
+
+    @Override
+    public int compareTo(Produs produs) {
+        return Integer.compare(this.codInventar, produs.codInventar);
     }
 }

@@ -1,6 +1,6 @@
-package com.pao.proiectMagazin.Servicii;
+package com.pao.proiectMagazin.servicii;
 
-import com.pao.proiectMagazin.Modele.Utilizator;
+import com.pao.proiectMagazin.modele.Utilizator;
 
 public class UserAccountService {
     private static UserAccountService instance;
