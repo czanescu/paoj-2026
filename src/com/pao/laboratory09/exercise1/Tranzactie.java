@@ -55,4 +55,21 @@ public class Tranzactie implements Serializable {
         return id;
     }
 
+    public double getSuma(){
+        return suma;
+    }
+
+    public String getContSursa(){
+        return contSursa;
+    }
+    public String getContDestinatie(){
+        return contDestinatie;
+    }
+    public TipTranzactie getTip(){
+        return tip;
+    }
+    public String getNote(){
+        return note;
+    }
+
 }
