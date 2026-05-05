@@ -36,7 +36,7 @@ public class Main {
                 String tip =  elemente[4];
                 QueueTranzactii.addLast(new Tranzactie(id, suma, data, tip));
             }
-            else if  (elemente[0].equals("POP"))//presupun ca trebuie removelast nu removefirst
+            else if  (elemente[0].equals("DEQUEUE"))//presupun ca trebuie removelast nu removefirst
             {
                 if (QueueTranzactii.isEmpty())
                     System.out.println("Coada goala.");
@@ -54,7 +54,7 @@ public class Main {
                 String tip =  elemente[4];
                 QueueTranzactii.addFirst(new Tranzactie(id, suma, data, tip));
             }
-            else if (elemente[0].equals("DEQUEUE"))
+            else if (elemente[0].equals("POP"))
             {
                 if (QueueTranzactii.isEmpty())
                     System.out.println("Coada goala.");
