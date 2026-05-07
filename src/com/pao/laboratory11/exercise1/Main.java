@@ -15,15 +15,11 @@ public class Main {
         LinkedList<Transaction> Tranzactii = new LinkedList();
         LinkedList<Transaction> Flagged = new LinkedList<>();
         List<Transaction> secret3rdList = new ArrayList<>();
-        Predicate<Transaction> isHighAmount = transaction -> transaction.getAmount() > 1000.00;
-        List<String> RISKY_COUNTRIES = Arrays.asList("NG", "RU", "UA", "CN", "BR");
-        List<String> SUSPICIOUS_CHANNELS = Arrays.asList("WEB", "MOBILE");
-        Predicate<Transaction> isRiskyCountry =
-                transaction -> RISKY_COUNTRIES.contains(transaction.getCountry());
-
-        Predicate<Transaction> isSuspiciousChannel =
-                transaction -> SUSPICIOUS_CHANNELS.contains(transaction.getChannel());
-        Predicate<Transaction> flaggedRule = isHighAmount.or(isRiskyCountry).or(isSuspiciousChannel);
+        Predicate<Transaction> isHighAmount = t -> t.getAmount() >= 5000;
+        List<String> SCORE_COUNTRIES = Arrays.asList("NG", "RU", "UA", "CN", "BR", "KP");
+        List<String> SUSPICIOUS_CHANNELS = Arrays.asList("CRYPTO");
+        Predicate<Transaction> isSuspiciousChannel = t -> SUSPICIOUS_CHANNELS.contains(t.getChannel());
+        Predicate<Transaction> flaggedRule = isHighAmount.or(isSuspiciousChannel);
         for(int i = 0; i < n; ++i)
         {
             String line = sc.nextLine();
@@ -35,13 +31,17 @@ public class Main {
             String channel =  lineArr[4];
             Transaction transaction = new Transaction(id, amount, date, country, channel);
             if (flaggedRule.test(transaction)) transaction.setFlag();
-            int amountScore = min(50, (int)(floor(amount / 1000) * 10));
-            int countryScore = 0, channelScore = 0;
-            if (isRiskyCountry.test(transaction)) countryScore = 20;
-            if (channel.equals("WEB")) channelScore = 22;
-            if (channel.equals("MOBILE") || channel.equals("APP")) channelScore = 10;
-            if (channel.equals("ATM")) channelScore = 5;
-            if (channel.equals("POS")) channelScore = 3;
+            int amountScore = Math.min(55, (int)(amount / 500) * 5);
+            int countryScore = SCORE_COUNTRIES.contains(country) ? 10 : 0;
+            int channelScore = switch (channel) {
+                case "WEB"    -> 45;
+                case "APP",
+                     "MOBILE" -> 40;
+                case "CRYPTO" -> 50;
+                case "ATM"    -> 20;
+                case "POS"    -> 20;
+                default       -> 0;
+            };
             int scorFinal = amountScore + countryScore + channelScore;
             transaction.setScore(scorFinal);
             Tranzactii.add(transaction);
@@ -82,9 +82,13 @@ public class Main {
             }
             else if (command.equals("LIST_FLAGGED"))
             {
-                for (Transaction transaction : Flagged) {
-                    System.out.printf("[%d] %s score=%d\n", transaction.getId(), transaction.getVerdict(), transaction.getScore());
+                if (Flagged.isEmpty()) {
+                    System.out.println("NONE");
+                } else {
+                    for (Transaction t : Flagged)
+                        System.out.printf("[%d] %s score=%d\n", t.getId(), t.getVerdict(), t.getScore());
                 }
+
             }
             else if (command.equals("TOP_RISK"))
             {
