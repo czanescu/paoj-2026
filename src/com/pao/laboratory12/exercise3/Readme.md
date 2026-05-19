@@ -1,4 +1,4 @@
-# Exercise 3 (Bonus) — MySQL vs SQLite vs H2 și Checklist Proiect-Ready
+git# Exercise 3 (Bonus) — MySQL vs SQLite vs H2 și Checklist Proiect-Ready
 
 > Pachet: `com.pao.laboratory12`
 > Bonus = puncte extra la proiect; nu este obligatoriu pentru nota de laborator.
