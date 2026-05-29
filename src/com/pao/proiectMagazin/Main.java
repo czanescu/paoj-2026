@@ -18,6 +18,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+
         System.out.println("Proiect gestionare stoc magazin\n");
         File bd = new File("dateSecurizate(plain text)");
         List<Utilizator> utilizatori = new ArrayList<>();
