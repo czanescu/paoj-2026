@@ -3,8 +3,13 @@ package com.pao.proiectMagazin;
 import com.pao.proiectMagazin.modele.*;
 import com.pao.proiectMagazin.servicii.*;
 import com.pao.proiectMagazin.exceptii.*;
+import com.pao.proiectMagazin.repository.*;
+import com.pao.proiectMagazin.util.DatabaseConnection;
 
-import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -20,134 +25,62 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("Proiect gestionare stoc magazin\n");
-        File bd = new File("dateSecurizate(plain text)");
         List<Utilizator> utilizatori = new ArrayList<>();
-        List<Furnizor> furnizori = new ArrayList<>();
         ProdusService produsService = ProdusService.getInstance();
+        FurnizorService furnizorService = FurnizorService.getInstance();
 
-        Angajat admin = new Angajat("admin", "Zănescu", "Cristian", 5, "5050227111111", "Strada Anonimă nr 3", "0752111111", "cristian.zanescu@gmail.com", "adminadmin", "27.02.2005", "14.04.2026", 0);
-        utilizatori.add(admin);
-        try (Scanner parser = new Scanner(bd)) {
-            int nrConturi = parser.nextInt();
-            System.out.println("Conturi încărcate: " + nrConturi);
-            int nrFurnizori = parser.nextInt();
-            System.out.println("Furnizori încărcați: " + nrFurnizori);
-            int nrProduse = parser.nextInt();
-            System.out.println("Produse încărcate: " + nrProduse);
-            int ultimulCodProdus = parser.nextInt();
-            System.out.println("Ultimul cod de inventar: " + ultimulCodProdus);
-            ContorCodInventar.initialize(ultimulCodProdus);
-            int nrVanzari = parser.nextInt();
-            System.out.println("Vânzări încărcate: " + nrVanzari);
-            parser.nextLine();
-            int nrModificariStoc = parser.nextInt();
-            parser.nextLine();
-            System.out.println("Modificări stoc încărcate: " + nrModificariStoc);
-            while (nrConturi > 0) {
-                nrConturi--;
-                String username = parser.nextLine();
-                String nume = parser.nextLine();
-                String prenume = parser.nextLine();
-                int salariu = parser.nextInt();
-                parser.nextLine();
-                String cnp = parser.nextLine();
-                String adresa = parser.nextLine();
-                String telefon = parser.nextLine();
-                String email = parser.nextLine();
-                String parola = parser.nextLine();
-                String dataNasterii = parser.nextLine();
-                String dataAngajare = parser.nextLine();
-                String dataConcediere = parser.nextLine();
-                if (dataConcediere.equals("null")) dataConcediere = null;
-                int uid = parser.nextInt();
-                parser.nextLine();
-                String tip = parser.nextLine();
-                Utilizator utilizator;
-                if (tip.equals("manager")) {
-                    utilizator = new Manager(username, nume, prenume, salariu, cnp, adresa, telefon, email, parola, dataNasterii, dataAngajare, uid);
-                } else {
-                    utilizator = new Angajat(username, nume, prenume, salariu, cnp, adresa, telefon, email, parola, dataNasterii, dataAngajare, uid);
-                }
-                if (!Objects.equals(dataConcediere, " ")) utilizator.concediere(dataConcediere);
-                utilizatori.add(utilizator);
-            }
-            while (nrFurnizori > 0) {
-                nrFurnizori--;
-                String nume = parser.nextLine();
-                String adresa = parser.nextLine();
-                String telefon = parser.nextLine();
-                String email = parser.nextLine();
-                String cui = parser.nextLine();
-                Furnizor furnizor = new Furnizor(nume, adresa, telefon, email, cui);
-                furnizori.add(furnizor);
-            }
-            while (nrProduse > 0) {
-                nrProduse--;
-                int codInventar = parser.nextInt();
-                parser.nextLine();
-                String nume = parser.nextLine();
-                int pretCumparare = parser.nextInt();
-                int pretVanzare = parser.nextInt();
-                parser.nextLine();
-                String categorie = parser.nextLine();
-                String cuiFurnizor = parser.nextLine();
-                int stocMinim = parser.nextInt();
-                int stoc = parser.nextInt();
-                int procentReducere = parser.nextInt();
-                int nrSpec = parser.nextInt();
-                parser.nextLine();
-                List<String> specificatii = new ArrayList<>();
-                while (nrSpec > 0) {
-                    nrSpec--;
-                    String spec = parser.nextLine();
-                    specificatii.add(spec);
-                }
-                Produs produs = new Produs(codInventar, nume, pretCumparare, pretVanzare, categorie, cuiFurnizor, stocMinim, stoc, procentReducere, specificatii);
+        FurnizorRepository furnizorRepository = new FurnizorRepository();
+        ProdusRepository produsRepository = new ProdusRepository();
+        UtilizatorRepository utilizatorRepository = new UtilizatorRepository();
+        VanzareRepository vanzareRepository = new VanzareRepository();
+        ModificareStocRepository modificareStocRepository = new ModificareStocRepository();
+
+        try {
+            utilizatori.addAll(utilizatorRepository.findAll());
+            furnizorService.incarcaFurnizori(furnizorRepository.findAll());
+            for (Produs produs : produsRepository.findAll()) {
                 produsService.adaugaProdus(produs);
             }
-            while (nrVanzari > 0) {
-                nrVanzari--;
-                int codProdus = parser.nextInt();
-                parser.nextLine();
-                String numeProdus = parser.nextLine();
-                int cantitate = parser.nextInt();
-                int pretUnitar = parser.nextInt();
-                parser.nextLine();
-                String categorieProdus = parser.nextLine();
-                String timestamp = parser.nextLine();
-                LocalDateTime dateTime = LocalDateTime.parse(timestamp);
-                VanzareRecord vanzareRecord = new VanzareRecord(codProdus, numeProdus, cantitate, pretUnitar, categorieProdus, dateTime);
+            for (VanzareRecord vanzareRecord : vanzareRepository.findAll()) {
                 produsService.getRaportVanzari().adaugaVanzare(vanzareRecord);
             }
-            while (nrModificariStoc > 0) {
-                nrModificariStoc--;
-                int codProdus = parser.nextInt();
-                parser.nextLine();
-                String numeProdus = parser.nextLine();
-                int stocAnterior = parser.nextInt();
-                int stocNou = parser.nextInt();
-                parser.nextLine();
-                String motiv = parser.nextLine();
-                int uidUtilizator = parser.nextInt();
-                parser.nextLine();
-                String timestamp = parser.nextLine();
-                LocalDateTime dateTime = LocalDateTime.parse(timestamp);
-                ModificareStocRecord modificareStocRecord = new ModificareStocRecord(codProdus, numeProdus, stocAnterior, stocNou, motiv, uidUtilizator, dateTime);
+            for (ModificareStocRecord modificareStocRecord : modificareStocRepository.findAll()) {
                 produsService.addModificareStoc(modificareStocRecord);
             }
-        } catch (FileNotFoundException e) {
-            try {
-                if (bd.createNewFile()) {
-                    System.out.println("Fișier creat: " + bd.getName());
-                } else {
-                    System.out.println("S-a încercat crearea pentru că nu a fost găsit, dar nu s-a reușit pentru că defapt există \uD83E\uDD37");
-                }
-            } catch (IOException er) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
+
+                int maxCodProdus = produsService.listeazaToate()
+                    .stream()
+                    .mapToInt(Produs::getCodInventar)
+                    .max()
+                    .orElse(-1);
+                int urmatorulCodProdus = maxCodProdus < 0 ? 0 : maxCodProdus + 1;
+                ContorCodInventar.initialize(urmatorulCodProdus);
+
+            System.out.println("Conturi încărcate: " + utilizatori.size());
+            System.out.println("Furnizori încărcați: " + furnizorService.listeazaToate().size());
+            System.out.println("Produse încărcate: " + produsService.listeazaToate().size());
+            System.out.println("Ultimul cod de inventar: " + urmatorulCodProdus);
+            System.out.println("Vânzări încărcate: " + produsService.getRaportVanzari().getVanzari().size());
+            System.out.println("Modificări stoc încărcate: " + produsService.getNrModificariStoc());
+        } catch (RuntimeException e) {
+            System.out.println("Eroare la încărcarea din baza de date: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        boolean adminExists = false;
+        for (Utilizator utilizator : utilizatori) {
+            if ("admin".equalsIgnoreCase(utilizator.getUsername())) {
+                adminExists = true;
+                break;
             }
         }
+        if (!adminExists) {
+            Angajat admin = new Angajat("admin", "admin", "admin", 0, "0000000000000", "admin", "0000000000", "admin", "adminadmin", "admin", "admin", utilizatori.size());
+            utilizatori.add(admin);
+        }
         UserAccountService accountService = UserAccountService.getInstance();
+        AuditService auditService = AuditService.getInstance();
         do {
             System.out.print("username:");
             String username = sc.nextLine();
@@ -165,6 +98,7 @@ public class Main {
                         }
                         System.out.println("\nBine ai venit " + utilizator.getNume() + " " + utilizator.getPrenume() + "\n");
                         accountService.login(utilizator);
+                        auditService.logAction("login");
                         break;
                     } else {
                         System.out.println("Parola Gresita");
@@ -204,84 +138,19 @@ public class Main {
             sc.nextLine();
             switch (choice) {
                 case 0: {
+                    auditService.logAction("save_exit");
                     isRunning = false;
-                    try (PrintWriter pw = new PrintWriter(new FileWriter(bd))) {
-                        int nrUseri = utilizatori.size() - 1;
-                        int nrFurnizori = furnizori.size();
-                        int nrProduse = produsService.listeazaToate().size();
-                        int UltimulCodInventar = ContorCodInventar.getInstance().getCodInventar();
-                        int nrVanzari = produsService.getRaportVanzari().getVanzari().size();
-                        int nrModificariStoc = produsService.getNrModificariStoc();
-                        pw.println(nrUseri);
-                        pw.println(nrFurnizori);
-                        pw.println(nrProduse);
-                        pw.println(UltimulCodInventar);
-                        pw.println(nrVanzari);
-                        pw.println(nrModificariStoc);
-                        for (Utilizator utilizator : utilizatori) {
-                            if (utilizator.getUsername().equals("admin")) continue;
-                            pw.println(utilizator.getUsername());
-                            pw.println(utilizator.getNume());
-                            pw.println(utilizator.getPrenume());
-                            pw.println(utilizator.getSalariu());
-                            pw.println(utilizator.getCnp());
-                            pw.println(utilizator.getAdresa());
-                            pw.println(utilizator.getTelefon());
-                            pw.println(utilizator.getEmail());
-                            pw.println(utilizator.getParola());
-                            pw.println(utilizator.getDataNasterii());
-                            pw.println(utilizator.getDataAngajare());
-                            pw.println(utilizator.getDataConcediere());
-                            pw.println(utilizator.getUid());
-                            if (utilizator.getRol().equals("Manager")) pw.println("manager");
-                            else pw.println("angajat");
-                        }
-                        for (Furnizor furnizor : furnizori) {
-                            pw.println(furnizor.getNume());
-                            pw.println(furnizor.getAdresa());
-                            pw.println(furnizor.getTelefon());
-                            pw.println(furnizor.getEmail());
-                            pw.println(furnizor.getCui());
-                        }
-                        for (Produs produs : produsService.listeazaToate()) {
-                            pw.println(produs.getCodInventar());
-                            pw.println(produs.getNume());
-                            pw.println(produs.getPretCumparare());
-                            pw.println(produs.getPretVanzare());
-                            pw.println(produs.getCategorie());
-                            pw.println(produs.getCuiFurnizor());
-                            pw.println(produs.getStocMinim());
-                            pw.println(produs.getStoc());
-                            pw.println(produs.getProcentReducere());
-                            pw.println(produs.getSpecificatii().size());
-                            for (String spec : produs.getSpecificatii()) {
-                                pw.println(spec);
-                            }
-                        }
-                        for (VanzareRecord vanzareRecord : produsService.getRaportVanzari().getVanzari()) {
-                            pw.println(vanzareRecord.getCodProdus());
-                            pw.println(vanzareRecord.getNumeProdus());
-                            pw.println(vanzareRecord.getCantitate());
-                            pw.println(vanzareRecord.getPretUnitar());
-                            pw.println(vanzareRecord.getCategorieProdus());
-                            pw.println(vanzareRecord.getTimestamp());
-                        }
-                        for (ModificareStocRecord modificareStocRecord : produsService.getModificariStoc()) {
-                            pw.println(modificareStocRecord.getCodProdus());
-                            pw.println(modificareStocRecord.getNumeProdus());
-                            pw.println(modificareStocRecord.getStocAnterior());
-                            pw.println(modificareStocRecord.getStocNou());
-                            pw.println(modificareStocRecord.getMotiv());
-                            pw.println(modificareStocRecord.getUidUtilizator());
-                            pw.println(modificareStocRecord.getTimestamp());
-                        }
-                    } catch (IOException e) {
+                    try {
+                        saveToDatabase(utilizatori, furnizorService.listeazaToate(), produsService);
+                        System.out.println("Salvare reușită!");
+                    } catch (SQLException e) {
+                        System.out.println("Salvare eșuată: " + e.getMessage());
                         e.printStackTrace();
                     }
-                    System.out.println("Salvare reușită!");
                     break;
                 }
                 case 1: {
+                    auditService.logAction("adauga_furnizor");
                     System.out.println("Adăugare furnizor\n");
                     System.out.print("Nume:");
                     String nume = sc.nextLine();
@@ -295,58 +164,51 @@ public class Main {
                     String cui = sc.nextLine();
                     boolean gasit = true;
                     while (gasit) {
-                        gasit = false;
-                        for (Furnizor furnizor : furnizori) {
-                            if (furnizor.getCui().equals(cui)) {
-                                gasit = true;
-                                System.out.println("CUI-ul este deja folosit");
-                                System.out.print("CUI:");
-                                cui = sc.nextLine();
-                                break;
-                            }
+                        gasit = furnizorService.existaCui(cui);
+                        if (gasit) {
+                            System.out.println("CUI-ul este deja folosit");
+                            System.out.print("CUI:");
+                            cui = sc.nextLine();
                         }
                     }
                     Furnizor furnizor = new Furnizor(nume, adresa, telefon, email, cui);
-                    furnizori.add(furnizor);
+                    furnizorService.adaugaFurnizor(furnizor);
                     break;
                 }
                 case 2: {
+                    auditService.logAction("modifica_furnizor");
                     System.out.println("Modificare furnizor\n");
                     System.out.print("Introdu CUI-ul pentru modificare:");
                     String cui = sc.nextLine();
-                    boolean gasit = false;
-                    for (Furnizor furnizor : furnizori) {
-                        if (furnizor.getCui().equals(cui)) {
-                            gasit = true;
-                            System.out.println("Furnizor găsit");
-                            System.out.println("În câmpurile următoare lasă gol pentru a nu schimba:");
-                            System.out.println("Nume nou:");
-                            String input = sc.nextLine();
-                            if (input.isEmpty()) input = furnizor.getNume();
-                            furnizor.setNume(input);
-                            System.out.println("Adresa nouă:");
-                            input = sc.nextLine();
-                            if (input.isEmpty()) input = furnizor.getAdresa();
-                            furnizor.setAdresa(input);
-                            System.out.println("Telefon nou:");
-                            input = sc.nextLine();
-                            if (input.isEmpty()) input = furnizor.getTelefon();
-                            furnizor.setTelefon(input);
-                            System.out.println("Email nou:");
-                            input = sc.nextLine();
-                            if (input.isEmpty()) input = furnizor.getEmail();
-                            furnizor.setEmail(input);
-                            System.out.println("Noile date din furnizor: " + furnizor);
-                            break;
-                        }
-                    }
-                    if (!gasit) {
+                    try {
+                        Furnizor furnizor = furnizorService.cautaDupaCui(cui);
+                        System.out.println("Furnizor găsit");
+                        System.out.println("În câmpurile următoare lasă gol pentru a nu schimba:");
+                        System.out.print("Nume vechi: " + furnizor.getNume() + ", Nume nou:");
+                        String input = sc.nextLine();
+                        if (input.isEmpty()) input = furnizor.getNume();
+                        furnizor.setNume(input);
+                        System.out.print("Adresa veche: " + furnizor.getAdresa() + "Adresa nouă:");
+                        input = sc.nextLine();
+                        if (input.isEmpty()) input = furnizor.getAdresa();
+                        furnizor.setAdresa(input);
+                        System.out.print("Telefon vechi: " + furnizor.getTelefon() + "Telefon nou:");
+                        input = sc.nextLine();
+                        if (input.isEmpty()) input = furnizor.getTelefon();
+                        furnizor.setTelefon(input);
+                        System.out.print("Email vechi: " + furnizor.getEmail() + "Email nou:");
+                        input = sc.nextLine();
+                        if (input.isEmpty()) input = furnizor.getEmail();
+                        furnizor.setEmail(input);
+                        System.out.println("Noile date din furnizor: " + furnizor);
+                    } catch (NoSuchElementException e) {
                         System.out.println("Nu s-a găsit furnizorul");
                     }
                     asteptareTasta();
                     break;
                 }
                 case 3: {
+                    auditService.logAction("adauga_produs");
                     System.out.println("Adăugare produs\n");
                     System.out.println("Nume:");
                     String nume = sc.nextLine();
@@ -369,12 +231,7 @@ public class Main {
                             iesire = true;
                             break;
                         }
-                        for (Furnizor furnizor : furnizori) {
-                            if (furnizor.getCui().equals(cuiFurnizor)) {
-                                exista = true;
-                                break;
-                            }
-                        }
+                        exista = furnizorService.existaCui(cuiFurnizor);
                         if (!exista) {
                             System.out.println("CUI-ul introdus nu este asociat cu nici-un furnizor (scrie end pentru a iesi din comandă).");
                         }
@@ -399,6 +256,7 @@ public class Main {
                     break;
                 }
                 case 4: {
+                    auditService.logAction("modifica_produs");
                     System.out.println("Modificare produs\n");
                     System.out.println("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
@@ -463,29 +321,33 @@ public class Main {
 
                 }
                 case 5: {
+                    auditService.logAction("receptie_marfa");
                     System.out.println("Recepție marfă\n");
                     System.out.println("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
                     sc.nextLine();
-                    if (produsService.cautaDupaId(codInventar) == null) {
-                        System.out.println("Codul introdus nu este asociat cu niciun produs. Apasă orice tastă pentru a reveni la meniul principal");
+                    try {
+                        produsService.cautaDupaId(codInventar);
+                        System.out.println("Număr produse noi:");
+                        int numProduse = sc.nextInt();
                         sc.nextLine();
+                        if (numProduse <= 0) {
+                            System.out.println("Stocul primit nu poate fi negativ. Apasă orice tastă pentru a reveni la meniul principal");
+                            sc.nextLine();
+                            break;
+                        }
+                        produsService.cautaDupaId(codInventar).addStoc(numProduse);
+                        System.out.println("Stoc adăugat. Stoc nou: " + produsService.cautaDupaId(codInventar).getStoc());
+                        asteptareTasta();
+                        break;
+                    } catch (ProdusNegasitException e) {
+                        System.out.println(e);
+                        asteptareTasta();
                         break;
                     }
-                    System.out.println("Număr produse noi:");
-                    int numProduse = sc.nextInt();
-                    sc.nextLine();
-                    if (numProduse <= 0) {
-                        System.out.println("Stocul primit nu poate fi negativ. Apasă orice tastă pentru a reveni la meniul principal");
-                        sc.nextLine();
-                        break;
-                    }
-                    produsService.cautaDupaId(codInventar).addStoc(numProduse);
-                    System.out.println("Stoc adăugat. Stoc nou: " + produsService.cautaDupaId(codInventar).getStoc());
-                    asteptareTasta();
-                    break;
                 }
                 case 6: {
+                    auditService.logAction("modifica_stoc");
                     System.out.println("Modificare stoc\n");
                     System.out.print("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
@@ -513,6 +375,7 @@ public class Main {
                     }
                 }
                 case 7: {
+                    auditService.logAction("vanzare_produs");
                     System.out.println("Vânzare produse\n");
                     System.out.print("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
@@ -536,14 +399,16 @@ public class Main {
                     break;
                 }
                 case 8: {
+                    auditService.logAction("afisare_furnizori");
                     System.out.println("Afișare furnizori\n");
-                    for (Furnizor furnizor : furnizori) {
+                    for (Furnizor furnizor : furnizorService.listeazaToate()) {
                         System.out.println(furnizor.toString());
                     }
                     asteptareTasta();
                     break;
                 }
                 case 9: {
+                    auditService.logAction("afisare_produse");
                     System.out.println("Afișare produse\n");
                     int opt = 0;
                     while (opt != 1 && opt != 2 && opt != 3 && opt != 4) {
@@ -596,6 +461,7 @@ public class Main {
                     break;
                 }
                 case 10: {
+                    auditService.logAction("afisare_stoc_critic");
                     System.out.println("Afișare stoc critic\n");
                     for (Produs produs : produsService.listeazaToate()) {
                         if (produs.getStocMinim() > produs.getStoc()) {
@@ -606,30 +472,34 @@ public class Main {
                     break;
                 }
                 case 11: {
+                    auditService.logAction("cauta_produs");
                     System.out.println("Căutare produs\n");
                     System.out.print("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
                     sc.nextLine();
-                    if (produsService.cautaDupaId(codInventar) == null) {
+                    try {
+                        System.out.println(produsService.cautaDupaId(codInventar));
+                    } catch (ProdusNegasitException e) {
                         System.out.println("Codul introdus nu este asociat cu niciun produs. Apasă orice tastă pentru a reveni la meniul principal");
                         sc.nextLine();
                         break;
                     }
-                    System.out.println(produsService.cautaDupaId(codInventar));
                     asteptareTasta();
                     break;
                 }
                 case 12: {
+                    auditService.logAction("aplica_reducere");
                     System.out.println("Aplicare reducere\n");
                     System.out.print("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
                     sc.nextLine();
-                    if (produsService.cautaDupaId(codInventar) == null) {
+                    try {
+                        System.out.println("Reducere actuală: " + produsService.cautaDupaId(codInventar).getProcentReducere() + "%.");
+                    } catch (ProdusNegasitException e) {
                         System.out.println("Codul introdus nu este asociat cu niciun produs. Apasă orice tastă pentru a reveni la meniul principal");
                         sc.nextLine();
                         break;
                     }
-                    System.out.println("Reducere actuală: " + produsService.cautaDupaId(codInventar).getProcentReducere() + "%.");
                     System.out.print("Reducere noua: ");
                     int reducere = sc.nextInt();
                     sc.nextLine();
@@ -649,6 +519,7 @@ public class Main {
                     break;
                 }
                 case 13: {
+                    auditService.logAction("raport_vanzari");
                     System.out.println("Raport vânzări\n");
                     RaportVanzari raport = produsService.getRaportVanzari();
                     if (raport.getVanzari().isEmpty()) {
@@ -751,16 +622,19 @@ public class Main {
                     break;
                 }
                 case 14: {
+                    auditService.logAction("sterge_produs");
                     System.out.println("Ștergere produs\n");
                     System.out.println("Introdu codul produsului: ");
                     int codInventar = sc.nextInt();
                     sc.nextLine();
-                    if (produsService.cautaDupaId(codInventar) == null) {
+                    Produs produs;
+                    try {
+                        produs = produsService.cautaDupaId(codInventar);
+                    } catch (ProdusNegasitException e) {
                         System.out.println("Codul introdus nu este asociat cu niciun produs");
                         asteptareTasta();
                         break;
                     }
-                    Produs produs = produsService.cautaDupaId(codInventar);
                     if (produs.getStoc() > 0) {
                         System.out.println("Pentru a elimina un produs stocul acestuia trebuie să fie 0!");
                         asteptareTasta();
@@ -776,24 +650,17 @@ public class Main {
                     break;
                 }
                 case 15: {
+                    auditService.logAction("sterge_furnizor");
                     System.out.println("Ștergere furnizor\n");
                     System.out.println("Introdu CUI-ul furnizorului: ");
                     String cui = sc.nextLine();
-                    boolean gasit = false;
-                    int poz = 0;
-                    for (int i = 0; i < furnizori.size(); i++) {
-                        if (furnizori.get(i).getCui().equals(cui)) {
-                            gasit = true;
-                            poz = i;
-                            break;
-                        }
-                    }
-                    if (!gasit) {
+                    if (!furnizorService.existaCui(cui)) {
                         System.out.println("CUI-ul introdus nu este asociat cu nici-un furnizor");
                         asteptareTasta();
                         break;
                     }
-                    gasit = false;
+                    Furnizor furnizor = furnizorService.cautaDupaCui(cui);
+                    boolean gasit = false;
                     for (Produs produs : produsService.listeazaToate()) {
                         if (produs.getCuiFurnizor().equals(cui)) {
                             gasit = true;
@@ -805,11 +672,11 @@ public class Main {
                         asteptareTasta();
                         break;
                     }
-                    System.out.println("Se va șterge furnizorul " + furnizori.get(poz));
+                    System.out.println("Se va șterge furnizorul " + furnizor);
                     System.out.println("Scrie 'yes' pentru a confirma!");
                     String opt = sc.nextLine();
                     if (opt.equals("yes")) {
-                        furnizori.remove(poz);
+                        furnizorService.stergeFurnizor(cui);
                         System.out.println("Ștergere reușită!");
                         asteptareTasta();
                         break;
@@ -820,6 +687,7 @@ public class Main {
                 }
                 case 16:
                 {
+                    auditService.logAction("creare_cont_angajat");
                     System.out.println("Creare cont angajat\n");
                     if (accountService.getLoggedInUser().getRol().equals("Angajat") && accountService.getLoggedInUser().getUid()!=0) {
                         System.out.println("Nu ai acces la această opțiune!");
@@ -952,6 +820,7 @@ public class Main {
                 }
                 case 17:
                 {
+                    auditService.logAction("detalii_angajati");
                     System.out.println("Detalii angajati\n");
                     if (accountService.getLoggedInUser().getRol().equals("Angajat") && accountService.getLoggedInUser().getUid()!=0) {
                         System.out.println("Nu ai acces la această opțiune!");
@@ -996,6 +865,7 @@ public class Main {
                 }
                 case 18:
                 {
+                    auditService.logAction("modifica_angajat");
                     System.out.println("Modificare angajat\n");
                     System.out.println("Introdu uid-ul angajatului: ");
                     int uid = sc.nextInt();
@@ -1051,6 +921,7 @@ public class Main {
                 }
                 case 19:
                 {
+                    auditService.logAction("sterge_angajat");
                     System.out.println("Stergere angajat\n");
                     if (accountService.getLoggedInUser().getRol().equals("Angajat") && accountService.getLoggedInUser().getUid()!=0) {
                         System.out.println("Nu ai acces la această opțiune!");
@@ -1076,6 +947,152 @@ public class Main {
                     break;
                 }
             }
+        }
+    }
+
+    private static void saveToDatabase(
+            List<Utilizator> utilizatori,
+            List<Furnizor> furnizori,
+            ProdusService produsService
+    ) throws SQLException {
+        DatabaseConnection databaseConnection = DatabaseConnection.getInstance();
+        try (Connection connection = databaseConnection.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                clearTables(connection);
+                saveUtilizatori(connection, utilizatori);
+                saveFurnizori(connection, furnizori);
+                saveProduse(connection, produsService.listeazaToate());
+                saveVanzari(connection, produsService.getRaportVanzari().getVanzari());
+                saveModificariStoc(connection, produsService.getModificariStoc());
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        }
+    }
+
+    private static void clearTables(Connection connection) throws SQLException {
+        String[] statements = {
+                "DELETE FROM produs_specificatie",
+                "DELETE FROM vanzare",
+                "DELETE FROM modificare_stoc",
+                "DELETE FROM produs",
+                "DELETE FROM furnizor",
+                "DELETE FROM utilizator"
+        };
+        for (String sql : statements) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    private static void saveUtilizatori(Connection connection, List<Utilizator> utilizatori) throws SQLException {
+        String sql = "INSERT INTO utilizator (uid, username, nume, prenume, salariu, cnp, adresa, telefon, email, parola, data_nasterii, data_angajare, data_concediere, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (Utilizator utilizator : utilizatori) {
+                statement.setInt(1, utilizator.getUid());
+                statement.setString(2, utilizator.getUsername());
+                statement.setString(3, utilizator.getNume());
+                statement.setString(4, utilizator.getPrenume());
+                statement.setInt(5, utilizator.getSalariu());
+                statement.setString(6, utilizator.getCnp());
+                statement.setString(7, utilizator.getAdresa());
+                statement.setString(8, utilizator.getTelefon());
+                statement.setString(9, utilizator.getEmail());
+                statement.setString(10, utilizator.getParola());
+                statement.setString(11, utilizator.getDataNasterii());
+                statement.setString(12, utilizator.getDataAngajare());
+                statement.setString(13, utilizator.getDataConcediere());
+                statement.setString(14, utilizator.getRol());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        }
+    }
+
+    private static void saveFurnizori(Connection connection, List<Furnizor> furnizori) throws SQLException {
+        String sql = "INSERT INTO furnizor (cui, nume, adresa, telefon, email) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (Furnizor furnizor : furnizori) {
+                statement.setString(1, furnizor.getCui());
+                statement.setString(2, furnizor.getNume());
+                statement.setString(3, furnizor.getAdresa());
+                statement.setString(4, furnizor.getTelefon());
+                statement.setString(5, furnizor.getEmail());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        }
+    }
+
+    private static void saveProduse(Connection connection, List<Produs> produse) throws SQLException {
+        String produsSql = "INSERT INTO produs (cod_inventar, nume, pret_cumparare, pret_vanzare, categorie, cui_furnizor, stoc_minim, stoc, procent_reducere) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String specSql = "INSERT INTO produs_specificatie (cod_inventar, specificatie) VALUES (?, ?)";
+        try (PreparedStatement produsStatement = connection.prepareStatement(produsSql);
+             PreparedStatement specStatement = connection.prepareStatement(specSql)) {
+            for (Produs produs : produse) {
+                produsStatement.setInt(1, produs.getCodInventar());
+                produsStatement.setString(2, produs.getNume());
+                produsStatement.setInt(3, produs.getPretCumparare());
+                produsStatement.setInt(4, produs.getPretVanzare());
+                produsStatement.setString(5, produs.getCategorie());
+                produsStatement.setString(6, produs.getCuiFurnizor());
+                produsStatement.setInt(7, produs.getStocMinim());
+                produsStatement.setInt(8, produs.getStoc());
+                produsStatement.setInt(9, produs.getProcentReducere());
+                produsStatement.addBatch();
+
+                List<String> specificatii = produs.getSpecificatii();
+                if (specificatii != null) {
+                    for (String spec : specificatii) {
+                        specStatement.setInt(1, produs.getCodInventar());
+                        specStatement.setString(2, spec);
+                        specStatement.addBatch();
+                    }
+                }
+            }
+            produsStatement.executeBatch();
+            specStatement.executeBatch();
+        }
+    }
+
+    private static void saveVanzari(Connection connection, List<VanzareRecord> vanzari) throws SQLException {
+        String sql = "INSERT INTO vanzare (cod_produs, nume_produs, cantitate, pret_unitar, total, categorie, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (VanzareRecord vanzare : vanzari) {
+                statement.setInt(1, vanzare.getCodProdus());
+                statement.setString(2, vanzare.getNumeProdus());
+                statement.setInt(3, vanzare.getCantitate());
+                statement.setInt(4, vanzare.getPretUnitar());
+                statement.setInt(5, vanzare.getTotal());
+                statement.setString(6, vanzare.getCategorieProdus());
+                statement.setTimestamp(7, Timestamp.valueOf(vanzare.getTimestamp()));
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        }
+    }
+
+    private static void saveModificariStoc(Connection connection, List<ModificareStocRecord> modificari) throws SQLException {
+        String sql = "INSERT INTO modificare_stoc (cod_produs, nume_produs, stoc_anterior, stoc_nou, diferenta, motiv, uid_utilizator, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (ModificareStocRecord modificare : modificari) {
+                statement.setInt(1, modificare.getCodProdus());
+                statement.setString(2, modificare.getNumeProdus());
+                statement.setInt(3, modificare.getStocAnterior());
+                statement.setInt(4, modificare.getStocNou());
+                statement.setInt(5, modificare.getDiferenta());
+                statement.setString(6, modificare.getMotiv());
+                statement.setInt(7, modificare.getUidUtilizator());
+                statement.setTimestamp(8, Timestamp.valueOf(modificare.getTimestamp()));
+                statement.addBatch();
+            }
+            statement.executeBatch();
         }
     }
 }

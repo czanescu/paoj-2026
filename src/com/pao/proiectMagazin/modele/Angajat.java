@@ -23,6 +23,7 @@ public class Angajat extends Persoana{
             String dataAngajare,
             int uid){
         super(nume, prenume, username, cnp, adresa, telefon, email, parola, uid);
+        this.dataNasterii = dataNasterii;
         this.salariu = salariu;
         this.dataAngajare = dataAngajare;
         this.dataConcediere = null;
