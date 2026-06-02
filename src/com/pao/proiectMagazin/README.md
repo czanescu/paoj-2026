@@ -30,17 +30,22 @@ Se introduce uid-ul produsului și se afișează toate datele aferente acestuia.
 Se introduce uid-ul produsului și o reducere în procente. Tastați 0 pentru a anula reducerea aplicată deja.
 ### 13. Raport Vânzări
 Se afișează un raport al vânzărilor în funcție de parametrii de filtrare aleși de utilizator (ex ultimele 10 vânzări, o anume categorie, etc.).
-### 14. Ștergere produs
+### 14. Rapoarte diverse
+Se afișează rapoarte bazate pe interogări SQL cu JOIN:
+- produse cu furnizor
+- modificări stoc cu utilizator
+- top produse vândute
+### 15. Ștergere produs
 Se șterge un produs în funcție de uid (trebuie să nu fie în stoc).
-### 15. Ștergere furnizor
+### 16. Ștergere furnizor
 Se șterge un furnizor din baza de date (trebuie să nu mai existe nici-un produs asociat cu acesta).
-### 16. Creare cont angajat (dacă utilizatorul e manager sau admin)
-Se introduce numele, prenumele, adresa(poate fi null), email-ul, numărul de telefon, cnp-ul,  rolul, data angajării, data nașterii și parola.
-### 17. Detalii Angajati (dacă utilizatorul e manager sau admin)
+### 17. Creare cont angajat (dacă utilizatorul e manager sau admin)
+Se introduce numele, prenumele, adresa(poate fi null), email-ul, numărul de telefon, cnp-ul, rolul, data angajării, data nașterii și parola.
+### 18. Detalii Angajati (dacă utilizatorul e manager sau admin)
 apare doar pentru manageri, permite fie afisarea tuturor angajatilor, fie afisarea detaliilor unui angajat.
-### 18. Modificare angajat (dacă utilizatorul e manager sau admin)
+### 19. Modificare angajat (dacă utilizatorul e manager sau admin)
 Se introduce uid-ul angajatului și pot fi modificate datele acestuia (inclusiv rolul).
-### 19. Ștergere angajat (dacă utilizatorul e manager sau admin)
+### 20. Ștergere angajat (dacă utilizatorul e manager sau admin)
 Se introduce uid-ul angajatului și data concedierii (nu e șters din baza de date, doar nu se mai poate loga)
 
 

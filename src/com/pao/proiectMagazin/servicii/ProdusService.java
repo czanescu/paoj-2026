@@ -35,10 +35,11 @@ public class ProdusService {
         }
         produse.remove(codInventar);
     }
-    public void addRecordModificareStoc(int codInventar, int cantitate, String motiv, int uidUtilizator) throws ProdusNegasitException {
+    public ModificareStocRecord addRecordModificareStoc(int codInventar, int cantitate, String motiv, int uidUtilizator) throws ProdusNegasitException {
         Produs produs = cautaDupaId(codInventar);
         ModificareStocRecord modificareStoc = new ModificareStocRecord(codInventar, produs.getNume(), produs.getStoc()-cantitate, produs.getStoc(), motiv, uidUtilizator);
         modificariStoc.add(modificareStoc);
+        return modificareStoc;
     }
 
     public int getNrModificariStoc() {
@@ -81,7 +82,7 @@ public class ProdusService {
         return lista;
     }
 
-    public void vindeProdus(int codInventar, int cantitate)
+    public VanzareRecord vindeProdus(int codInventar, int cantitate)
             throws ProdusNegasitException, StocInsuficientException {
         Produs produs = cautaDupaId(codInventar);
         if (cantitate <= 0) {
@@ -100,6 +101,7 @@ public class ProdusService {
                 LocalDateTime.now()
         );
         raportVanzari.adaugaVanzare(vanzare);
+        return vanzare;
     }
 
     public RaportVanzari getRaportVanzari() {
